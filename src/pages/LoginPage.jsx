@@ -12,6 +12,8 @@ function LoginPage() {
     mutationFn: () => login(email, password),
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
+      // 新增：儲存 API 回傳的完整使用者資料，包含 username 和 userId
+      localStorage.setItem("userData", JSON.stringify(data)); 
       alert("登入成功！");
       navigate("/welcome");
     },
@@ -29,7 +31,6 @@ function LoginPage() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      {/* 改成 text，不再遮密碼 */}
       <input
         type="text"
         placeholder="Password"
@@ -45,4 +46,3 @@ function LoginPage() {
 }
 
 export default LoginPage;
-

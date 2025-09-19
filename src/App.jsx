@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import WelcomePage from "./pages/WelcomePage";
+import UsersPage from "./pages/UsersPage"; // 新增
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/welcome" element={<WelcomePage />} />
+          <Route path="/users" element={<UsersPage />} /> {/* 新增 */}
         </Routes>
       </BrowserRouter>
       <ReactQueryDevtools initialIsOpen={false} />
@@ -23,4 +25,3 @@ function App() {
 }
 
 export default App;
-
