@@ -1,3 +1,4 @@
+// src/api/base/BaseApi.js
 import axios from "axios";
 
 const API_BASE = "http://172.16.1.39:8964";
@@ -30,11 +31,14 @@ export const getUsers = async (token) => {
   return res.data;
 };
 
+// 【重要修改】將 updateUser 的請求方法從 POST 改為 PUT，以解決 405 Method Not Allowed 錯誤。
 export const updateUser = async (userUpdateData) => {
   const token = localStorage.getItem("token");
-  const res = await axios.post(`${API_BASE}/User/Update`, userUpdateData, {
-    headers: getAuthHeader(token)
-  });
+  const res = await axios.put( // 將 axios.post 改為 axios.put
+    `${API_BASE}/User/Update`,
+    userUpdateData,
+    { headers: getAuthHeader(token) }
+  );
   return res.data;
 };
 
