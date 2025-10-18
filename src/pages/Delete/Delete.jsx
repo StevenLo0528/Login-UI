@@ -1,9 +1,13 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { TextField, Button, Box, Snackbar, Alert, CircularProgress, Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteUser } from "../../api/base/BaseApi";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import FormContainer from "../../components/FormContainer"; // 引入共用組件
+import SubmitButton from "../../components/SubmitButton"; // 引入共用組件
+import AlertSnackbar from "../../components/AlertSnackbar"; // 引入共用組件
+import MuiTextField from "../../components/MuiTextField"; // 引入共用組件
 
 const Delete = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -27,55 +31,42 @@ const Delete = () => {
   });
 
   const onSubmit = (data) => {
-    // 保持嘗試將 ID 轉換為數字，但由於後端可能接受字串，我們移除前端格式限制
     const payload = {
-      user_ID: data.user_ID, // 不再強制轉換為數字，讓後端處理
+      user_ID: data.user_ID,
     };
     mutation.mutate(payload);
   };
+  const handleCloseAlert = () => setAlert({ ...alert, open: false });
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        width: 300,
-        textAlign: "center"
-      }}
-    >
+    <FormContainer>
       <Typography variant="h5" sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 1 }}>
         <DeleteForeverIcon sx={{ mr: 1 }} color="error" />
         刪除使用者
       </Typography>
-      <TextField
+      <MuiTextField
         label="使用者 ID"
-        // 移除 pattern 限制，只保留 required
         {...register("user_ID", { required: true })}
         error={!!mutation.isError}
         helperText={mutation.isError ? "請檢查輸入的 ID 及伺服器狀態" : ""}
       />
 
-      <Button
-        variant="contained"
+      <SubmitButton
+        onClick={handleSubmit(onSubmit)}
+        isLoading={mutation.isLoading}
         color="error"
         startIcon={<DeleteForeverIcon />}
-        onClick={handleSubmit(onSubmit)}
-        disabled={mutation.isLoading}
       >
-        {mutation.isLoading ? <CircularProgress size={24} color="inherit" /> : "刪除"}
-      </Button>
+        刪除
+      </SubmitButton>
 
-      <Snackbar
+      <AlertSnackbar
         open={alert.open}
-        autoHideDuration={2000}
-        onClose={() => setAlert({ ...alert, open: false })}
-      >
-        <Alert severity={alert.type} onClose={() => setAlert({ ...alert, open: false })}>
-          {alert.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+        message={alert.message}
+        type={alert.type}
+        onClose={handleCloseAlert}
+      />
+    </FormContainer>
   );
 };
 

@@ -1,9 +1,13 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { TextField, Button, Box, Snackbar, Alert, CircularProgress } from "@mui/material";
+import { Button, Alert, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { register as registerUser } from "../../api/base/BaseApi";
+import FormContainer from "../../components/FormContainer"; // 引入共用組件
+import SubmitButton from "../../components/SubmitButton"; // 引入共用組件
+import AlertSnackbar from "../../components/AlertSnackbar"; // 引入共用組件
+import MuiTextField from "../../components/MuiTextField"; // 引入共用組件
 
 const SignUp = () => {
   const { register, handleSubmit } = useForm();
@@ -33,29 +37,21 @@ const SignUp = () => {
     };
     mutation.mutate(payload);
   };
+  const handleCloseAlert = () => setAlert({ ...alert, open: false });
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        width: 300,
-        textAlign: "center"
-      }}
-    >
+    <FormContainer>
       <h2>建立帳號</h2>
-      <TextField label="Username" {...register("username", { required: true })} />
-      <TextField label="Email" {...register("email", { required: true })} />
-      <TextField label="Password" type="password" {...register("password", { required: true })} />
+      <MuiTextField label="Username" {...register("username", { required: true })} />
+      <MuiTextField label="Email" {...register("email", { required: true })} />
+      <MuiTextField label="Password" type="password" {...register("password", { required: true })} />
 
-      <Button
-        variant="contained"
+      <SubmitButton
         onClick={handleSubmit(onSubmit)}
-        disabled={mutation.isLoading}
+        isLoading={mutation.isLoading}
       >
-        {mutation.isLoading ? <CircularProgress size={24} color="inherit" /> : "註冊"}
-      </Button>
+        註冊
+      </SubmitButton>
 
       <Button
         variant="outlined"
@@ -71,14 +67,13 @@ const SignUp = () => {
         </Alert>
       )}
 
-      <Snackbar
+      <AlertSnackbar
         open={alert.open}
-        autoHideDuration={2000}
-        onClose={() => setAlert({ ...alert, open: false })}
-      >
-        <Alert severity={alert.type}>{alert.message}</Alert>
-      </Snackbar>
-    </Box>
+        message={alert.message}
+        type={alert.type}
+        onClose={handleCloseAlert}
+      />
+    </FormContainer>
   );
 };
 

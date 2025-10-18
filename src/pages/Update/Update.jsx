@@ -1,9 +1,13 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { TextField, Button, Box, Snackbar, Alert, CircularProgress, Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "../../api/base/BaseApi";
 import EditIcon from "@mui/icons-material/Edit";
+import FormContainer from "../../components/FormContainer"; // 引入共用組件
+import SubmitButton from "../../components/SubmitButton"; // 引入共用組件
+import AlertSnackbar from "../../components/AlertSnackbar"; // 引入共用組件
+import MuiTextField from "../../components/MuiTextField"; // 引入共用組件
 
 const Update = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -27,56 +31,43 @@ const Update = () => {
   });
 
   const onSubmit = (data) => {
-    // 保持嘗試將 ID 轉換為數字，但由於後端可能接受字串，我們移除前端格式限制
     const payload = {
-      Id: data.Id, // 不再強制轉換為數字，讓後端處理
+      Id: data.Id,
       name: data.name
     };
     mutation.mutate(payload);
   };
+  const handleCloseAlert = () => setAlert({ ...alert, open: false });
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        width: 300,
-        textAlign: "center"
-      }}
-    >
+    <FormContainer>
       <Typography variant="h5" sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 1 }}>
         <EditIcon sx={{ mr: 1 }} />
         更新使用者名稱
       </Typography>
-      <TextField
+      <MuiTextField
         label="使用者 ID"
-        // 移除 pattern 限制，只保留 required
-        {...register("Id", { required: true })} 
+        {...register("Id", { required: true })}
         error={!!mutation.isError}
         helperText={mutation.isError ? "請檢查輸入的 ID 及伺服器狀態" : ""}
       />
-      <TextField label="新名稱" {...register("name", { required: true })} />
+      <MuiTextField label="新名稱" {...register("name", { required: true })} />
 
-      <Button
-        variant="contained"
-        startIcon={<EditIcon />}
+      <SubmitButton
         onClick={handleSubmit(onSubmit)}
-        disabled={mutation.isLoading}
+        isLoading={mutation.isLoading}
+        startIcon={<EditIcon />}
       >
-        {mutation.isLoading ? <CircularProgress size={24} color="inherit" /> : "更新"}
-      </Button>
+        更新
+      </SubmitButton>
 
-      <Snackbar
+      <AlertSnackbar
         open={alert.open}
-        autoHideDuration={2000}
-        onClose={() => setAlert({ ...alert, open: false })}
-      >
-        <Alert severity={alert.type} onClose={() => setAlert({ ...alert, open: false })}>
-          {alert.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+        message={alert.message}
+        type={alert.type}
+        onClose={handleCloseAlert}
+      />
+    </FormContainer>
   );
 };
 
